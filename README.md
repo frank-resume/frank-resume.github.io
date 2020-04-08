@@ -203,7 +203,7 @@ make -j
 make install
 
 export PATH=/usr/local/memcached/bin:$PATH
-memcached -d -m 1024 -u root -l 127.0.0.1 -p 11211 -c 1024 -P /tmp/memcached.pid
+memcached -d -m 1024 -u root -l 127.0.0.1 -p 11211 -c 1024 -P /var/run/memcached.pid
 telnet 127.0.0.1 11211
 ```
 
@@ -331,29 +331,60 @@ make install
 </details>
 
 <details>
+<summary>Jenkins</summary>
+
+```
+wget http://ftp-nyc.osuosl.org/pub/jenkins/war-stable/2.222.1/jenkins.war
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-9/v9.0.33/bin/apache-tomcat-9.0.33.tar.gz
+wget https://mirror.bit.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+java8，java11
+cloudbees-folder.hpi
+
+java -jar jenkins.war
+./tomcat/bin/startup.sh
+```
+
+</details>
+
+<details>
 <summary>Docker</summary>
 
 ```
-1.安装依赖包
-apt-get install software-properties-common
-
-2.添加GPG密钥
-curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | apt-key add -
-
-3.添加软件源
-add-apt-repository "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
-
-4.安装docker和docker-compose
-apt-get install docker-ce
-apt-get install docker-compose
-
-5.添加服务和启动docker
-systemctl enable docker
-systemctl start docker
-
-6.添加组和加入组
+wget https://download.docker.com/linux/static/stable/x86_64/docker-19.03.5.tgz
+tar -zxvf docker-19.03.5.tgz
+mv docker/* /usr/local/bin
 groupadd docker
 usermod -aG docker $USER
+
+curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
+
+</details>
+
+<details>
+<summary>Kubernetes</summary>
+
+```
+apt install apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+cat <<EOF > /etc/apt/sources.list.d/kubernetes.list
+deb https://mirrors.aliyun.com/kubernetes/apt kubernetes-xenial main
+EOF
+apt update && apt install kubectl kubeadm kubelet
+
+swapoff -a && modprobe br_netfilter && sysctl -w net.ipv4.ip_forward=1
+cat <<EOF > /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+EOF
+kubeadm init --pod-network-cidr=10.244.0.0/16 --image-repository registry.aliyuncs.com/google_containers
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id-u):$(id -g) $HOME/.kube/config
 ```
 
 </details>
