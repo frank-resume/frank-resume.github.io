@@ -421,3 +421,115 @@ cd rabbitmq-server-3.8.2
 ```
 
 </details>
+
+# Other
+<details>
+<summary>aliyun.ecs</summary>
+
+```
+远程连接密码:776286、修改实例密码
+
+添加普通用户
+adduser frank && usermod -aG sudo frank
+用户 登录主机=(可切换用户:可执行命令) 无密码命令 --- NOPASSWD: ALL(不需要密码) --- ALL(需要密码)
+
+安装环境->安全组->外网访问
+```
+
+</details>
+
+<details>
+<summary>cmd-alias</summary>
+
+```
+### C:\win-alias.bat
+@echo off
+doskey ls=dir $*
+doskey php=wsl php $*
+
+### regedit
+计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Command Processor
+新建->字符串值 --- AutoRun: D:\wsl-tools\cmd-alias.bat
+```
+
+</details>
+
+<details>
+<summary>error-exception</summary>
+
+```
+PHP错误和异常
+
+认识：
+Error(错误)、Warning(警示)、Notice(提醒)
+遇到错误程序终止，其他情况则继续执行
+
+原因：
+Parse error：少了分号，语句不完整
+Fatal error：调用不存在的类、方法、函数和少给参数，require不存在的文件
+Warning：除以0，缺少$符号，include不存在的文件
+Notice：不存在的变量
+
+问题：
+Parse error、Fatal error、Warning、Notice，都会打印错误
+Parse error、Fatal error，被Error捕获才不显示
+Warning、Notice，由set_error_handler处理才不显示
+
+处理：
+错误类：Error，可以捕获用户抛出的Error异常、Parse error和Fatal error。但当前页面的Parse error捕获不了
+异常类：Exception，可以捕获用户抛出的Exception异常。当然，用户可以自定义异常，但最好以Exception为基类
+异常类：ErrorException，
+
+预防：
+set_error_handler：Warning、Notice和用户通过trigger_error触发error|warning|notice时，会交由该函数处理，用户未定义则使用系统的函数处理
+register_shutdown_function：程序执行结束时都会调用该函数。如果是错误导致程序终止的，可以获取最后的错误信息
+
+include 运行时加载，可能多次。程序继续执行(Warning)
+require 开始就加载，只有一次。程序终止(Fatal error)
+```
+
+</details>
+
+<details>
+<summary>startup</summary>
+
+```
+### startup.vbs
+Set ws = WScript.CreateObject("WScript.Shell")
+ws.run "wsl sudo /etc/init.wsl", vbhide
+
+### /etc/sudoers
+%sudo   ALL=NOPASSWD: /etc/init.wsl
+
+### /etc/init.wsl --- :set ff=unix
+#! /bin/bash
+/etc/init.d/ssh restart
+/usr/local/nginx/sbin/nginx
+/usr/local/php/sbin/php-fpm
+redis-server /etc/redis/6379.conf --daemonize yes
+/usr/local/mysql/bin/mysqld --user=mysql --log-error=/var/log/mysql/error.log --daemonize
+/usr/local/memcached/bin/memcached -d
+/usr/local/mongodb/bin/mongod --dbpath=/usr/local/mongodb/data
+```
+
+</details>
+
+<details>
+<summary>vscode</summary>
+
+```
+设置中文Ctrl + Shift + P
+
+配置PHP可执行文件 win访问wsl
+
+### PHP Intelephense
+格式化快捷键Shift + Alt + F
+输入提示、自动use、去掉未使用的use
+跳转定义 类、方法
+
+安装并默认wsl bash
+
+Debug
+```
+
+</details>
